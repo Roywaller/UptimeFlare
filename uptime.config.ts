@@ -7,15 +7,29 @@ import { MaintenanceConfig, PageConfig, WorkerConfig } from './types/config'
 
 const pageConfig: PageConfig = {
   // Title for your status page
-  title: "lyc8503's Status Page",
+  title: "Spleeter Status Page",
   // Links shown at the header of your status page, could set `highlight` to `true`
   links: [
-    { link: 'https://github.com/lyc8503', label: 'GitHub' },
-    { link: 'https://blog.lyc8503.net/', label: 'Blog' },
-    { link: 'mailto:me@lyc8503.net', label: 'Email Me', highlight: true },
+    { link: 'https://late-dream-70b1.roywaller.workers.dev/', label: 'spleeter' },
+    { link: 'https://spleeter.roywaller.de5.net/', label: 'spleeter' },
   ],
-}
+}  
 
+group: {
+  '🔐 Private': ['spleeter'],
+},
+
+monitors: [
+  {
+    id: 'spleeter',
+    name: 'spleeter web',
+    method: 'GET',
+    // `target` should be `host:port` for tcp monitors
+    target: 'https://roywaller-spleeter-web.hf.space',   #将这里修改为你自己的地址
+    timeout: 5000,
+  },
+],
+  
 const workerConfig: WorkerConfig = {
   // Define all your monitors here
   monitors: [
