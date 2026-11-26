@@ -78,11 +78,12 @@ const workerConfig: WorkerConfig = {
 
   notification: {
     // Server酱³（Turbo 版）推送
-    // 这里必须用 POST + JSON：$MSG 是多行文本，塞进 GET query 容易超长或编码出错
-    // 注意 $MSG 只会被整体替换，所以 title 只能是固定文案，正文用 desp 承载
+    // 真正的推送地址不写进仓库。这个仓库是 public，token 留在代码里等于公开。
+    // 构建时由 .github/workflows/deploy.yml 从 Environment secret
+    // `SERVERCHAN_WOOK` 取值替换掉下面的占位符。
     webhook: [
       {
-        url: 'https://29762.push.ft07.com/send/sctp29762tmf4g4hv4rssbtrrf8e793h.send',
+        url: '__SERVERCHAN_WOOK__',
         method: 'POST',
         payloadType: 'json',
         payload: {

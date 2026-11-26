@@ -8,8 +8,35 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # 声明 environment 后，下面的 secrets 才会去读 Environments 里的
+    # Settings → Environments → production
+    environment: production
     steps:
       - uses: actions/checkout@v3
+
+      # 把 Server酱 推送地址从 Environment secret 注入到 uptime.config.ts
+      # 仓库里只留占位符 __SERVERCHAN_WOOK__，避免 token 出现在 public 仓库
+      - name: Inject Server酱 webhook
+        env:
+          SERVERCHAN_WOOK: ${{ secrets.SERVERCHAN_WOOK }}
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, sys
+
+          url = (os.environ.get("SERVERCHAN_WOOK") or "").strip()
+          if not url.startswith("http"):
+              sys.exit("Environment secret SERVERCHAN_WOOK 缺失或格式不对："
+                       "请在 Settings → Environments → production 里添加，值是完整的 https 推送地址")
+
+          p = pathlib.Path("uptime.config.ts")
+          s = p.read_text(encoding="utf-8")
+          marker = "__SERVERCHAN_WOOK__"
+          if marker not in s:
+              sys.exit("uptime.config.ts 里找不到占位符 " + marker)
+
+          p.write_text(s.replace(marker, url), encoding="utf-8")
+          print("Webhook 注入完成，长度 %d" % len(url))
+          PY
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.3
