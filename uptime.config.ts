@@ -8,7 +8,8 @@ const pageConfig: PageConfig = {
 
   // 状态页右上角的链接
   links: [
-    { link: 'https://roywaller-spleeter-web.hf.space', label: 'Spleeter Web', highlight: true },
+    { link: 'https://late-dream-70b1.roywaller.workers.dev/', label: 'Spleeter Web', highlight: true },
+    { link: 'https://roywaller-spleeter-web.hf.space', label: 'Spleeter 后端', highlight: true },
     { link: 'https://github.com/Roywaller/UptimeFlare', label: 'GitHub' },
   ],
 
@@ -61,17 +62,22 @@ const workerConfig: WorkerConfig = {
   ],
 
   notification: {
-    // 想收告警就填 webhook，例如 Telegram / 钉钉 / Bark / 企业微信机器人
-    // 不填则只记录、不通知
-    // webhook: {
-    //   url: 'https://api.telegram.org/bot<TOKEN>/sendMessage',
-    //   payloadType: 'x-www-form-urlencoded',
-    //   payload: {
-    //     chat_id: '<CHAT_ID>',
-    //     text: '$MSG',
-    //   },
-    //   timeout: 10000,
-    // },
+    // Server酱³（Turbo 版）推送
+    // 这里必须用 POST + JSON：$MSG 是多行文本，塞进 GET query 容易超长或编码出错
+    // 注意 $MSG 只会被整体替换，所以 title 只能是固定文案，正文用 desp 承载
+    webhook: [
+      {
+        url: 'https://29762.push.ft07.com/send/sctp29762tmf4g4hv4rssbtrrf8e793h.send',
+        method: 'POST',
+        payloadType: 'json',
+        payload: {
+          title: 'Spleeter 状态提醒',
+          desp: '$MSG',
+          tags: 'uptime|spleeter',
+        },
+        timeout: 10000,
+      },
+    ],
 
     // 通知里的时区
     timeZone: 'Asia/Shanghai',
