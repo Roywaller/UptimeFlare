@@ -1,148 +1,87 @@
-// This is a simplified example config file for quickstart
-// Some not frequently used features are omitted/commented out here
-// For a full-featured example, please refer to `uptime.config.full.ts`
-
-// Don't edit this line
+// UptimeFlare 配置文件 —— 放在仓库根目录，覆盖同名文件
+// 下面三行 import / export 不要改，否则编译失败
 import { MaintenanceConfig, PageConfig, WorkerConfig } from './types/config'
 
 const pageConfig: PageConfig = {
-  // Title for your status page
-  title: "Spleeter Status Page",
-  // Links shown at the header of your status page, could set `highlight` to `true`
+  // 状态页标题
+  title: 'Spleeter Status Page',
+
+  // 状态页右上角的链接
   links: [
-    { link: 'https://late-dream-70b1.roywaller.workers.dev/', label: 'spleeter' },
-    { link: 'https://spleeter.roywaller.de5.net/', label: 'spleeter' },
+    { link: 'https://roywaller-spleeter-web.hf.space', label: 'Spleeter Web', highlight: true },
+    { link: 'https://github.com/Roywaller/UptimeFlare', label: 'GitHub' },
   ],
-}  
 
-group: {
-  '🔐 Private': ['spleeter'],
-},
-
-monitors: [
-  {
-    id: 'spleeter',
-    name: 'spleeter web',
-    method: 'GET',
-    // `target` should be `host:port` for tcp monitors
-    target: 'https://roywaller-spleeter-web.hf.space',   #将这里修改为你自己的地址
-    timeout: 5000,
+  // 分组显示：只有写在这里的 monitor id 才会在状态页出现（未列出的仍会被监控，但不显示）
+  group: {
+    '🌐 Public': ['spleeter'],
   },
-],
-  
+
+  // [可选] 自定义图标，不填用默认 /favicon.png、/logo.svg
+  // favicon: 'https://roywaller-spleeter-web.hf.space/favicon.ico',
+
+  maintenances: {
+    upcomingColor: 'gray',
+  },
+}
+
 const workerConfig: WorkerConfig = {
-  // Define all your monitors here
+  // 写入冷却时间（分钟），默认 3，省 D1 写入量可以调大
+  kvWriteCooldownMinutes: 3,
+
+  // [可选] 给状态页和 API 加 HTTP Basic 认证，格式 '用户名:密码'
+  // passwordProtection: 'user:pass',
+
   monitors: [
-    // Example HTTP Monitor
     {
-      // `id` should be unique, history will be kept if the `id` remains constant
-      id: 'foo_monitor',
-      // `name` is used at status page and callback message
-      name: 'My API Monitor',
-      // `method` should be a valid HTTP Method
+      // id 必须唯一且保持稳定，改了 id 会丢历史记录
+      id: 'spleeter',
+      name: 'Spleeter Web (HF Space)',
       method: 'GET',
-      // `target` is a valid URL
-      target: 'https://example.com',
-      // [OPTIONAL] `tooltip` is ONLY used at status page to show a tooltip
-      tooltip: 'This is a tooltip for this monitor',
-      // [OPTIONAL] `statusPageLink` is ONLY used for clickable link at status page
-      statusPageLink: 'https://example.com',
-      // [OPTIONAL] `expectedCodes` is an array of acceptable HTTP response codes, if not specified, default to 2xx
+      target: 'https://roywaller-spleeter-web.hf.space',
+      tooltip: 'Hugging Face Space - Spleeter Web',
+      statusPageLink: 'https://roywaller-spleeter-web.hf.space',
+
+      // 可接受的状态码，不写默认 2xx
       expectedCodes: [200],
-      // [OPTIONAL] `timeout` in millisecond, if not specified, default to 10000
-      timeout: 10000,
-      // [OPTIONAL] headers to be sent
+
+      // HF 免费 Space 会休眠，冷启动可能要几十秒，超时给宽一点
+      timeout: 30000,
+
       headers: {
+        // HF 有时会对默认 UA 做限制，这里显式指定
         'User-Agent': 'Uptimeflare',
-        Authorization: 'Bearer YOUR_TOKEN_HERE',
       },
-      // [OPTIONAL] body to be sent (require POST/PUT/PATCH method)
-      // body: 'Hello, world!',
-      // [OPTIONAL] if specified, the response must contains the keyword to be considered as operational.
-      // responseKeyword: 'success',
-      // [OPTIONAL] if specified, the response must NOT contains the keyword to be considered as operational.
-      // responseForbiddenKeyword: 'bad gateway',
-      // [OPTIONAL] if specified, will call the check proxy to check the monitor, mainly for geo-specific checks
-      // refer to docs https://github.com/lyc8503/UptimeFlare/wiki/Check-proxy-setup before setting this value
-      // currently supports `worker://`, `globalping://` and `http(s)://` proxies
-      // checkProxy: 'worker://weur',
-      // [OPTIONAL] if true, the check will fallback to local if the specified proxy is down
-      // checkProxyFallback: true,
-    },
-    // Example TCP Monitor
-    {
-      id: 'test_tcp_monitor',
-      name: 'Example TCP Monitor',
-      // `method` should be `TCP_PING` for tcp monitors
-      method: 'TCP_PING',
-      // `target` should be `host:port` for tcp monitors
-      target: '1.2.3.4:22',
-      tooltip: 'My production server SSH',
-      statusPageLink: 'https://example.com',
-      timeout: 5000,
+
+      // 如果你的 Space 开始页出现固定文案，可以加上关键字校验，避免"返回 200 但实际没起来"
+      // responseKeyword: 'Spleeter',
+      // 命中即判定为异常
+      // responseForbiddenKeyword: 'Runtime error',
     },
   ],
-  // [Optional] Notification settings
+
   notification: {
-    // [Optional] Notification webhook settings, if not specified, no notification will be sent
-    // More info at Wiki: https://github.com/lyc8503/UptimeFlare/wiki/Setup-notification
-    webhook: {
-      // [Required] webhook URL (example: Telegram Bot API)
-      url: 'https://api.telegram.org/bot123456:ABCDEF/sendMessage',
-      // [Optional] HTTP method, default to 'GET' for payloadType=param, 'POST' otherwise
-      // method: 'POST',
-      // [Optional] headers to be sent
-      // headers: {
-      //   foo: 'bar',
-      // },
-      // [Required] Specify how to encode the payload
-      // Should be one of 'param', 'json' or 'x-www-form-urlencoded'
-      // 'param': append url-encoded payload to URL search parameters
-      // 'json': POST json payload as body, set content-type header to 'application/json'
-      // 'x-www-form-urlencoded': POST url-encoded payload as body, set content-type header to 'x-www-form-urlencoded'
-      payloadType: 'x-www-form-urlencoded',
-      // [Required] payload to be sent
-      // $MSG will be replaced with the human-readable notification message
-      payload: {
-        chat_id: 12345678,
-        text: '$MSG',
-      },
-      // [Optional] timeout calling this webhook, in millisecond, default to 5000
-      timeout: 10000,
-    },
-    // [Optional] timezone used in notification messages, default to "Etc/GMT"
+    // 想收告警就填 webhook，例如 Telegram / 钉钉 / Bark / 企业微信机器人
+    // 不填则只记录、不通知
+    // webhook: {
+    //   url: 'https://api.telegram.org/bot<TOKEN>/sendMessage',
+    //   payloadType: 'x-www-form-urlencoded',
+    //   payload: {
+    //     chat_id: '<CHAT_ID>',
+    //     text: '$MSG',
+    //   },
+    //   timeout: 10000,
+    // },
+
+    // 通知里的时区
     timeZone: 'Asia/Shanghai',
-    // [Optional] grace period in minutes before sending a notification
-    // notification will be sent only if the monitor is down for N continuous checks after the initial failure
-    // if not specified, notification will be sent immediately
+
+    // 宽限期（分钟）：连续失败 N 分钟后才发通知，避免冷启动/抖动刷屏
     gracePeriod: 5,
   },
 }
 
-// You can define multiple maintenances here
-// During maintenance, an alert will be shown at status page
-// Also, related downtime notifications will be skipped (if any)
-// Of course, you can leave it empty if you don't need this feature
+// 定时维护窗口，没有就留空数组
+const maintenances: MaintenanceConfig[] = []
 
-// const maintenances: MaintenanceConfig[] = []
-
-const maintenances: MaintenanceConfig[] = [
-  {
-    // [Optional] Monitor IDs to be affected by this maintenance
-    monitors: ['foo_monitor', 'bar_monitor'],
-    // [Optional] default to "Scheduled Maintenance" if not specified
-    title: 'Test Maintenance',
-    // Description of the maintenance, will be shown at status page
-    body: 'This is a test maintenance, server software upgrade',
-    // Start time of the maintenance, in UNIX timestamp or ISO 8601 format
-    start: '2020-01-01T00:00:00+08:00',
-    // [Optional] end time of the maintenance, in UNIX timestamp or ISO 8601 format
-    // if not specified, the maintenance will be considered as on-going
-    end: '2050-01-01T00:00:00+08:00',
-    // [Optional] color of the maintenance alert at status page, default to "yellow"
-    color: 'blue',
-  },
-]
-
-// Don't edit this line
 export { maintenances, pageConfig, workerConfig }
