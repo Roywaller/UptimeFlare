@@ -15,7 +15,7 @@ const pageConfig: PageConfig = {
 
   // 分组显示：只有写在这里的 monitor id 才会在状态页出现（未列出的仍会被监控，但不显示）
   group: {
-    '🌐 Public': ['spleeter'],
+    '🌐 Public': ['spleeter', 'frontend'],
   },
 
   // [可选] 自定义图标，不填用默认 /favicon.png、/logo.svg
@@ -37,27 +37,42 @@ const workerConfig: WorkerConfig = {
     {
       // id 必须唯一且保持稳定，改了 id 会丢历史记录
       id: 'spleeter',
-      name: 'Spleeter Web (HF Space)',
+      name: '伴奏分离后端 (HF Space)',
       method: 'GET',
-      target: 'https://roywaller-spleeter-web.hf.space',
-      tooltip: 'Hugging Face Space - Spleeter Web',
+      // 打健康接口而不是首页：首页即使后端挂了也可能返回 200 的 HTML 外壳
+      target: 'https://roywaller-spleeter-web.hf.space/api/health',
+      tooltip: 'HF Space 健康检查，返回 {ok:true} 才算正常',
       statusPageLink: 'https://roywaller-spleeter-web.hf.space',
 
       // 可接受的状态码，不写默认 2xx
       expectedCodes: [200],
 
-      // HF 免费 Space 会休眠，冷启动可能要几十秒，超时给宽一点
-      timeout: 30000,
+      // HF 免费 Space 会休眠，冷启动约 40~60 秒；
+      // 但 cron 每分钟一次，超时别给到 60s 否则会和下一轮重叠
+      timeout: 45000,
 
       headers: {
         // HF 有时会对默认 UA 做限制，这里显式指定
         'User-Agent': 'Uptimeflare',
       },
 
-      // 如果你的 Space 开始页出现固定文案，可以加上关键字校验，避免"返回 200 但实际没起来"
-      // responseKeyword: 'Spleeter',
-      // 命中即判定为异常
-      // responseForbiddenKeyword: 'Runtime error',
+      // 关键字校验：避免「返回 200 但后端实际没起来」
+      responseKeyword: '"ok":true',
+    },
+    {
+      id: 'frontend',
+      name: '前端页面 (Cloudflare)',
+      method: 'GET',
+      target: 'https://late-dream-70b1.roywaller.workers.dev/',
+      tooltip: '前端静态页，打开就能上传歌曲',
+      statusPageLink: 'https://late-dream-70b1.roywaller.workers.dev/',
+
+      expectedCodes: [200],
+      timeout: 10000,
+
+      headers: {
+        'User-Agent': 'Uptimeflare',
+      },
     },
   ],
 
