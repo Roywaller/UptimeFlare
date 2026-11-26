@@ -8,7 +8,7 @@ const pageConfig: PageConfig = {
 
   // 状态页右上角的链接
   links: [
-    { link: 'https://late-dream-70b1.roywaller.workers.dev/', label: 'Spleeter Web', highlight: true },
+    { link: 'https://spleeter.roywaller.workers.dev/', label: 'Spleeter Web', highlight: true },
     { link: 'https://roywaller-spleeter-web.hf.space', label: 'Spleeter 后端', highlight: true },
     { link: 'https://github.com/Roywaller/UptimeFlare', label: 'GitHub' },
   ],
@@ -63,9 +63,9 @@ const workerConfig: WorkerConfig = {
       id: 'frontend',
       name: '前端页面 (Cloudflare)',
       method: 'GET',
-      target: 'https://late-dream-70b1.roywaller.workers.dev/',
+      target: 'https://spleeter.roywaller.workers.dev/',
       tooltip: '前端静态页，打开就能上传歌曲',
-      statusPageLink: 'https://late-dream-70b1.roywaller.workers.dev/',
+      statusPageLink: 'https://spleeter.roywaller.workers.dev/',
 
       expectedCodes: [200],
       timeout: 10000,
